@@ -1,0 +1,12 @@
+{
+    "require": {
+        "ext-curl": "*",
+        "ext-json": "*",
+        "google/apiclient": "^2.0"
+    },
+  "name": "",
+  "description": "",
+  "autoload": {
+    "psr-4": {"AhaApp\\": "src/"}
+  }
+}
