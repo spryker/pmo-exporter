@@ -13,7 +13,6 @@ use JiraRestApi\User\UserService;
 
 class Personio
 {
-
     /**
      * @var PersonioConfig
      */
@@ -126,7 +125,6 @@ class Personio
             // get the user info.
             $users = $us->findUsers($paramArray);
             foreach ($users as $user) {
-                //var_dump($user);
                 $this->jiraUsers[$user->emailAddress] = $user->displayName;
             }
         } catch (JiraException $e) {
@@ -326,7 +324,7 @@ class Personio
     {
         $client = new Google_Client();
         $client->setApplicationName('Personio');
-        $client->setScopes(Google_Service_Sheets::SPREADSHEETS);
+        $client->setScopes([Google_Service_Sheets::SPREADSHEETS]);
         $client->setAuthConfig($this->config->getGoogleSecretJson());
         $client->setAccessType('offline');
 

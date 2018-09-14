@@ -1,0 +1,14 @@
+{
+  "require": {
+    "ext-curl": "*",
+    "ext-json": "*",
+    "google/apiclient": "^2.0",
+    "lesstif/php-jira-rest-client": "^1.30"
+  },
+  "autoload": {
+    "psr-4": {
+      "PersonioApp\\": "PersonioApp/",
+      "AhaApp\\": "AhaApp/"
+    }
+  }
+}

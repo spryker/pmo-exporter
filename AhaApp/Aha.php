@@ -81,7 +81,9 @@ class Aha
 
     public function run()
     {
+        $this->log('Starting...');
         $this->saveDataToGoogleSheet($this->getData());
+        $this->log('Done.');
     }
 
     /**
@@ -89,16 +91,16 @@ class Aha
      */
     protected function getData()
     {
+        $this->log('Loading data...');
         $ideas = [];
+
         foreach ($this->products as $product) {
+            $this->log('Loading '.$product.'...');
             $productData = $this->getProductIdeas([], $product, 1);
             $this->exportOutput($product, $productData);
             $ideas[$product] = [];
             $ideas[$product] = $productData;
         }
-
-        $data = var_export( $this->parsed['COS'], true );
-//        file_put_contents("cos_data.php", $data);
 
         return $this->parsed;
 
@@ -254,6 +256,7 @@ class Aha
      */
     protected function saveDataToGoogleSheet(array $data)
     {
+        $this->log('Exporting to Google...');
         $client = new Google_Client();
         $client->setApplicationName('Aha API Integration');
         $client->setScopes([Google_Service_Sheets::SPREADSHEETS]);
@@ -280,6 +283,8 @@ class Aha
         }
 
         foreach ($this->products as $product) {
+            $this->log('Exporting '.$product.'...');
+
             $body = new Google_Service_Sheets_BatchUpdateSpreadsheetRequest([
                 'requests' => [
                     'addSheet' => [
@@ -295,8 +300,6 @@ class Aha
 
             $dataSet = [];
             $dataSet[] = array_values($this->sheetHeaders);
-
-            var_dump($product);
 
             foreach ($data[$product] as $key => $datum) {
                 $row = [];
@@ -383,6 +386,12 @@ class Aha
         curl_close($ch);
 
         return $response;
+    }
+
+    protected function log($string)
+    {
+        print $string.'<br/>'.PHP_EOL;
+        flush();
     }
 
 }
