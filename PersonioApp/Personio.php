@@ -73,17 +73,7 @@ class Personio
         $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782];
 
         $this->filteredEmployeeStatuses = [];
-        $this->filteredTimeOffMonths = [
-            '2018-01',
-            '2018-02',
-            '2018-03',
-            '2018-04',
-            '2018-05',
-            '2018-06',
-            '2018-07',
-            '2018-08',
-            '2018-09',
-        ];
+        $this->filteredTimeOffMonths = $this->getRequiredMonths(time());
 
         $this->availableTimeOffTypes = [];
         $this->availableTimeOffApprovalStatuses = [];
@@ -453,5 +443,27 @@ class Personio
     protected function log($string)
     {
         error_log('Personio: ' . $string);
+    }
+
+    protected function getRequiredMonths($time)
+    {
+        $targetMonth = (int)date('m', $time);
+        $targetYear = (int)date('Y', $time);
+        $firstMonth = 1;
+        $firstYear = $targetYear;
+
+        if ($targetMonth == 1) {
+            $firstYear = $firstYear - 1;
+        }
+
+        $result = [];
+
+        while ($firstYear < $targetYear || $firstYear === $targetYear && $firstMonth <= $targetMonth) {
+            $result[] = sprintf('%02d-%d', $firstMonth, $firstYear);
+            $firstYear += (int)floor($firstMonth/12);
+            $firstMonth = $firstMonth%12 + 1;
+        }
+
+        return $result;
     }
 }
