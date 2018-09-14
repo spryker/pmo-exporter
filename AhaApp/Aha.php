@@ -390,8 +390,7 @@ class Aha
 
     protected function log($string)
     {
-        print $string.'<br/>'.PHP_EOL;
-        flush();
+        error_log($string);
     }
 
 }

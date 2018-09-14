@@ -134,7 +134,9 @@ class Personio
 
     public function run()
     {
+        $this->log('Starting...');
         $this->parseTimeOffsToGoogleSheetFormat();
+        $this->log('Done.');
     }
 
     public function setSelectedValues()
@@ -255,8 +257,6 @@ class Personio
 
         $server_output = curl_exec($ch);
 
-//        file_put_contents('new.json', $server_output);
-
         $response = json_decode($server_output, true);
 
         $rows = [];
@@ -340,6 +340,7 @@ class Personio
         $rows = [];
 
         foreach ($timeOffs as $timeOff) {
+            $this->log('Processing '.$timeOff['start_date'].'');
             $date = new DateTime($timeOff['start_date']);
             $dateCount = ceil($timeOff['days_count']);
 
@@ -449,4 +450,8 @@ class Personio
         $sheets->spreadsheets_values->append($spreadsheetId, $rangeSheet1, $body, $params);
     }
 
+    protected function log($string)
+    {
+        error_log($string);
+    }
 }

@@ -25,7 +25,7 @@ class AhaConfig
      */
     public function getGoogleSecretJson()
     {
-        $jsonData = $this->getEnvVariable('GOOGLE_CLIENT_SECRET', '');
+        $jsonData = $this->getEnvVariable('AHA_GOOGLE_CLIENT_SECRET', '');
 
         return json_decode($jsonData, true) ?? [];
     }
