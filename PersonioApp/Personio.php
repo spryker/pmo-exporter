@@ -452,6 +452,6 @@ class Personio
 
     protected function log($string)
     {
-        error_log($string);
+        error_log('Personio: ' . $string);
     }
 }

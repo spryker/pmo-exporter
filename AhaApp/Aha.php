@@ -390,7 +390,7 @@ class Aha
 
     protected function log($string)
     {
-        error_log($string);
+        error_log('AHA: ' . $string);
     }
 
 }
