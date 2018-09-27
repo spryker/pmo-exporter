@@ -73,7 +73,7 @@ class Personio
         $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782];
 
         $this->filteredEmployeeStatuses = [];
-        $this->filteredTimeOffMonths = $this->getRequiredMonths(time());
+        $this->filteredTimeOffMonths = $this->getRequiredMonths();
 
         $this->availableTimeOffTypes = [];
         $this->availableTimeOffApprovalStatuses = [];
@@ -222,8 +222,6 @@ class Personio
                 'vacationDayBalance' => $value[self::ATTRIBUTES]['vacation_day_balance']['value'],
             ];
         }
-
-//        var_dump($this->availableDepartments);
 
         curl_close($ch);
 
@@ -452,7 +450,7 @@ class Personio
         $targetMonth = (int)date('m', $targetTime);
         $targetYear = (int)date('Y', $targetTime);
         $firstMonth = 1;
-        $firstYear = (int)date('Y');
+        $firstYear = 2016;
 
         if ($targetMonth == 1) {
             $firstYear = $firstYear - 1;
@@ -461,7 +459,7 @@ class Personio
         $result = [];
 
         while ($firstYear < $targetYear || $firstYear === $targetYear && $firstMonth <= $targetMonth) {
-            $result[] = sprintf('%02d-%d', $firstMonth, $firstYear);
+            $result[] = sprintf('%d-%02d', $firstYear, $firstMonth);
             $firstYear += (int)floor($firstMonth/12);
             $firstMonth = $firstMonth%12 + 1;
         }
