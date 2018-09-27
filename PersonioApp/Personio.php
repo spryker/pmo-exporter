@@ -445,12 +445,14 @@ class Personio
         error_log('Personio: ' . $string);
     }
 
-    protected function getRequiredMonths($time)
+    protected function getRequiredMonths()
     {
-        $targetMonth = (int)date('m', $time);
-        $targetYear = (int)date('Y', $time);
+        $targetTime = strtotime(sprintf("+%s month", $this->config->getPersonioAddMonths()));
+
+        $targetMonth = (int)date('m', $targetTime);
+        $targetYear = (int)date('Y', $targetTime);
         $firstMonth = 1;
-        $firstYear = $targetYear;
+        $firstYear = (int)date('Y');
 
         if ($targetMonth == 1) {
             $firstYear = $firstYear - 1;

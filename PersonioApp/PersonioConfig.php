@@ -71,6 +71,14 @@ class PersonioConfig
     }
 
     /**
+     * @return int
+     */
+    public function getPersonioAddMonths()
+    {
+        return (int)$this->getEnvVariable('PERSONIO_ADD_MONTHS', 0);
+    }
+
+    /**
      * @param string $variableName
      * @param $defaultValue
      *
