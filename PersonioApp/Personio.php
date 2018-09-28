@@ -332,6 +332,10 @@ class Personio
             $date = new DateTime($timeOff['start_date']);
             $dateCount = ceil($timeOff['days_count']);
 
+            if ($dateCount <= 0) {
+                continue;
+            }
+
             $prcDates = [];
 
             for($a = 1 ; $a <= $dateCount ; $a++) {
@@ -358,62 +362,6 @@ class Personio
                 $prcDates[count($prcDates)-1][5] = self::WORKING_HOURS_PER_DAY / 2;
             }
 
-
-            // $explodeDaysCount = explode('.',$timeOff['days_count']);
-
-            // if (count($explodeDaysCount) == 2 && $explodeDaysCount[1] === '5') {
-            //     var_dump();
-            //     $hoursPerDay = self::WORKING_HOURS_PER_DAY;
-            //     if ($timeOff['half_day_start'] == 1) {
-            //         $hoursPerDay = self::WORKING_HOURS_PER_DAY / 2;
-            //     }
-
-            //     if ($a == $timeOff['days_count'] && $timeOff['half_day_end'] == 1) {
-            //         $hoursPerDay = self::WORKING_HOURS_PER_DAY / 2;
-            //     }
-
-            //     $rows[] = [
-            //         'Absences',
-            //         $this->timeOffJira[$timeOff['time_off_type_name']] . ' ' . $this->timeOffJiraStoryName[$timeOff['time_off_type_name']],
-            //         $this->timeOffJira[$timeOff['time_off_type_name']],
-            //         $this->jiraUsers[$timeOff['employee_email']] ?? $timeOff['employee_name'],
-            //         $date->format('Y-m-d'),
-            //         $hoursPerDay, //explode('T', $timeOff['start_date'])[0]
-            //         // $timeOff['id']
-            //         // $timeOff[static::KEY_DEPARTMENT],
-            //     ];
-            //     $date->modify('+1 day');
-            //     if ($date->format('D') === 'Sat') {
-            //         $date->modify('+2 day');
-            //     }
-            //     var_dump($explodeDaysCount);
-            //     $timeOff['days_count'] = $explodeDaysCount[0];
-            // } else {
-            // }
-            //     for ($a = 1; $a <= $timeOff['days_count']; $a++) {
-            //         $hoursPerDay = self::WORKING_HOURS_PER_DAY;
-            //         if ($a == 1 && $timeOff['half_day_start'] == 1) {
-            //             // $hoursPerDay = self::WORKING_HOURS_PER_DAY / 2;
-            //         }
-            //         if ($a == $timeOff['days_count'] && $timeOff['half_day_end'] == 1) {
-            //             $hoursPerDay = self::WORKING_HOURS_PER_DAY / 2;
-            //         }
-            //         var_dump($timeOff[static::KEY_DEPARTMENT], $timeOff['employee_email']);
-            //         $rows[] = [
-            //             'Absences',
-            //             $this->timeOffJira[$timeOff['time_off_type_name']] . ' ' . $this->timeOffJiraStoryName[$timeOff['time_off_type_name']],
-            //             $this->timeOffJira[$timeOff['time_off_type_name']],
-            //             $this->jiraUsers[$timeOff['employee_email']] ?? $timeOff['employee_name'],
-            //             $date->format('Y-m-d'),
-            //             $hoursPerDay, //explode('T', $timeOff['start_date'])[0]
-            //             // $timeOff['id']
-            //             // $timeOff[static::KEY_DEPARTMENT],
-            //         ];
-            //         $date->modify('+1 day');
-            //         if ($date->format('D') === 'Sat') {
-            //             $date->modify('+2 day');
-            //         }
-            //     }
             foreach ($prcDates as $value) {
                 $rows[] = $value;
             }
