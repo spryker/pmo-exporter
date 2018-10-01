@@ -64,10 +64,8 @@ class Personio
         
         $this->filteredTimeOffIds = [];
         $this->filteredTimeOffTypes = [
-            1214, //'Child sick'
-            617, //'Paid vacation'
-            615, //'Sick days'
-            1089, //'Special Paid Vacation'
+            1879, // Training
+            1088, // Home office
         ];
         $this->filteredTimeOffApprovalStatuses = [];
         $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782];
@@ -253,7 +251,7 @@ class Personio
             $this->availableTimeOffTypes[$value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id']] = $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'];
 
             if (count($this->filteredTimeOffTypes) > 0) {
-                if (in_array($value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === false) {
+                if (in_array($value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === true) {
                     continue;
                 }
             }
