@@ -86,6 +86,8 @@ class Personio
             'Paid vacation' => 'ABSENCE-3',
             'Sick days' => 'ABSENCE-4',
             'Special Paid Vacation' => 'ABSENCE-3', //same as 'Paid vacation'
+            'Unpaid vacation' => 'ABSENCE-5', //same as 'Paid vacation'
+            'Parental leave' => 'ABSENCE-10',
         ];
         $this->timeOffJiraStoryName = [
             'Child sick' => 'P_ChildSick_Hours',
@@ -93,6 +95,8 @@ class Personio
             'Paid vacation' => 'P_Vacation_Hours_PAID',
             'Sick days' => 'P_Sick_Hours',
             'Special Paid Vacation' => 'P_Vacation_Hours_PAID', //same as 'Paid vacation'
+            'Parental leave' => 'P_Parental Leave',
+            'Unpaid vacation' => 'P_Vacation_Hours_UNPAID',
         ];
 
         $this->jiraCredentials = new ArrayConfiguration([
@@ -346,6 +350,14 @@ class Personio
                     $date->format('Y-m-d'),
                     $hoursPerDay,
                 ];
+
+                if (!isset($this->timeOffJira[$timeOff['time_off_type_name']])) {
+                    var_dump($timeOff['time_off_type_name']);
+                }
+                if (!isset($this->timeOffJiraStoryName[$timeOff['time_off_type_name']])) {
+                    var_dump($timeOff['time_off_type_name']);
+                }
+
                 $date->modify('+1 day');
                 if ($date->format('D') === 'Sat') {
                     $date->modify('+2 day');
