@@ -64,7 +64,6 @@ class Personio
         
         $this->filteredTimeOffIds = [];
         $this->filteredTimeOffTypes = [
-            1879, // Training
             1088, // Home office
         ];
         $this->filteredTimeOffApprovalStatuses = [];
