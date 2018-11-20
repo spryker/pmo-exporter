@@ -87,7 +87,7 @@ class Personio
             'Special Paid Vacation' => 'ABSENCE-3', //same as 'Paid vacation'
             'Unpaid vacation' => 'ABSENCE-5', //same as 'Paid vacation'
             'Parental leave' => 'ABSENCE-10',
-            'Training ' => 'ABSENCE-XX',
+            'Training ' => 'ABSENCE-15',
         ];
         $this->timeOffJiraStoryName = [
             'Child sick' => 'P_ChildSick_Hours',
