@@ -87,6 +87,7 @@ class Personio
             'Special Paid Vacation' => 'ABSENCE-3', //same as 'Paid vacation'
             'Unpaid vacation' => 'ABSENCE-5', //same as 'Paid vacation'
             'Parental leave' => 'ABSENCE-10',
+            'Training' => 'ABSENCE-XX',
         ];
         $this->timeOffJiraStoryName = [
             'Child sick' => 'P_ChildSick_Hours',
@@ -96,6 +97,7 @@ class Personio
             'Special Paid Vacation' => 'P_Vacation_Hours_PAID', //same as 'Paid vacation'
             'Parental leave' => 'P_Parental Leave',
             'Unpaid vacation' => 'P_Vacation_Hours_UNPAID',
+            'Training' => 'Training',
         ];
 
         $this->jiraCredentials = new ArrayConfiguration([
