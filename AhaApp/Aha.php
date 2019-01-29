@@ -128,6 +128,7 @@ class Aha
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $serverOutput = curl_exec($ch);
+        curl_close($ch);
 
         $response = json_decode($serverOutput, true);
 
@@ -135,9 +136,9 @@ class Aha
             $responseArray = $this->getProductIdeas($responseArray, $productName, $page + 1);
         }
 
-        $this->getIdeasData($productName, $response['ideas']);
-
-        curl_close($ch);
+        if (is_array($response['ideas'])) {
+            $this->getIdeasData($productName, $response['ideas']);
+        }
 
         return $responseArray;
     }
