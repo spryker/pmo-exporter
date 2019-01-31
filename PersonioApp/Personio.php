@@ -207,12 +207,6 @@ class Personio
             $this->availableDepartments[$value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id']] = $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['name'];
             $this->availableEmployeeStatuses[$value[self::ATTRIBUTES]['status']['value']] = $value[self::ATTRIBUTES]['status']['value'];
 
-            if (count($this->filteredEmployeeStatuses) > 0) {
-                if (in_array($value[self::ATTRIBUTES]['status']['value'], $this->filteredEmployeeStatuses) === false) {
-                    continue;
-                }
-            }
-
             $personInformation = [
                 'id' => $value[self::ATTRIBUTES]['id']['value'],
                 'type' => $value['type'],
@@ -223,11 +217,20 @@ class Personio
                 'vacationDayBalance' => $value[self::ATTRIBUTES]['vacation_day_balance']['value'],
             ];
 
+            if (count($this->filteredEmployeeStatuses) > 0) {
+                if (in_array($value[self::ATTRIBUTES]['status']['value'], $this->filteredEmployeeStatuses) === false) {
+                    print "wrong status:" . $value[self::ATTRIBUTES]['status']['value'] . "\n";
+                    var_dump($personInformation);
+                    continue;
+                }
+            }
+
+
             if (!in_array($personInformation['id'], $this->includeEmployees)) {
 
                 if (count($this->filteredDepartments) > 0) {
                     if (in_array($value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'], $this->filteredDepartments) === false) {
-                        print "dep:" . $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'] . "\n";
+                        print "wrong dep:" . $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'] . "\n";
                         var_dump($personInformation);
 
                         continue;
