@@ -68,7 +68,7 @@ class Personio
             1088, // Home office
         ];
         $this->filteredTimeOffApprovalStatuses = [];
-        $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782, 79779, 2573];
+        $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782, 79779, 2573, 184022, 114935];
 
         $this->filteredEmployeeStatuses = [];
         $this->filteredTimeOffMonths = $this->getRequiredMonths();
@@ -243,7 +243,6 @@ class Personio
 
         curl_close($ch);
 
-die;
         return $rows;
     }
 
