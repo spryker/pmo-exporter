@@ -31,6 +31,10 @@ class Personio
     protected $availableTimeOffApprovalStatuses;
     protected $availableDepartments;
     protected $availableEmployeeStatuses;
+    protected $includeEmployees = [
+        697920,//Felix Richard Pfander
+        764429,//Juliane Kissau
+    ];
 
     protected $employees;
     protected $processingStatus = null;
@@ -68,7 +72,7 @@ class Personio
             1088, // Home office
         ];
         $this->filteredTimeOffApprovalStatuses = [];
-        $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782, 79779, 2573, 184022, 114935, 114923];
+        $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782, 79779, 2573, 184022, 114935];
 
         $this->filteredEmployeeStatuses = [];
         $this->filteredTimeOffMonths = $this->getRequiredMonths();
@@ -208,7 +212,7 @@ class Personio
                 }
             }
 
-            $personIformation = [
+            $personInformation = [
                 'id' => $value[self::ATTRIBUTES]['id']['value'],
                 'type' => $value['type'],
                 'name' => $value[self::ATTRIBUTES]['first_name']['value'] . ' ' . $value[self::ATTRIBUTES]['last_name']['value'],
@@ -218,27 +222,21 @@ class Personio
                 'vacationDayBalance' => $value[self::ATTRIBUTES]['vacation_day_balance']['value'],
             ];
 
-            if (count($this->filteredDepartments) > 0) {
-                if (in_array($value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'], $this->filteredDepartments) === false) {
-                    print "dep:".$value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id']."\n";
-                    var_dump($personIformation);
+            if (!in_array($personInformation['id'], $this->includeEmployees)) {
 
+                if (count($this->filteredDepartments) > 0) {
+                    if (in_array($value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'], $this->filteredDepartments) === false) {
+                        print "dep:" . $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'] . "\n";
+                        var_dump($personInformation);
 
-                    continue;
+                        continue;
+                    }
                 }
             }
 
             $this->employees[] = $value[self::ATTRIBUTES]['id']['value'];
 
-            $rows[] = [
-                'id' => $value[self::ATTRIBUTES]['id']['value'],
-                'type' => $value['type'],
-                'name' => $value[self::ATTRIBUTES]['first_name']['value'] . ' ' . $value[self::ATTRIBUTES]['last_name']['value'],
-                'email' => $value[self::ATTRIBUTES]['email']['value'],
-                'status' => $value[self::ATTRIBUTES]['status']['value'],
-                self::KEY_DEPARTMENT => $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'],
-                'vacationDayBalance' => $value[self::ATTRIBUTES]['vacation_day_balance']['value'],
-            ];
+            $rows[] = $personInformation;
         }
 
         curl_close($ch);
