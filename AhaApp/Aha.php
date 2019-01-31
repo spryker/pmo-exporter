@@ -98,12 +98,12 @@ class Aha
             $this->log('Loading '.$product.'...');
             $productData = $this->getProductIdeas([], $product, 1);
             var_dump($productData);
-            die;
-            $this->exportOutput($product, $productData);
+//            die;
+//            $this->exportOutput($product, $productData);
             $ideas[$product] = [];
             $ideas[$product] = $productData;
         }
-
+die;
         return $this->parsed;
 
     }
@@ -125,12 +125,17 @@ class Aha
             'Authorization: Bearer ' . $this->config->getToken(),
         ]);
 
-        curl_setopt($ch, CURLOPT_URL, $this->config->getAhaApiUrl() . '/products/' . $productName . '/ideas/?page=' . $page . '&fields=*');
+        $url = $this->config->getAhaApiUrl() . '/products/' . $productName . '/ideas/?page=' . $page . '&fields=*';
+        var_dump($url);
+
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $serverOutput = curl_exec($ch);
         curl_close($ch);
+
+        var_dump($serverOutput);
 
         $response = json_decode($serverOutput, true);
 
