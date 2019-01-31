@@ -208,8 +208,22 @@ class Personio
                 }
             }
 
+            $personIformation = [
+                'id' => $value[self::ATTRIBUTES]['id']['value'],
+                'type' => $value['type'],
+                'name' => $value[self::ATTRIBUTES]['first_name']['value'] . ' ' . $value[self::ATTRIBUTES]['last_name']['value'],
+                'email' => $value[self::ATTRIBUTES]['email']['value'],
+                'status' => $value[self::ATTRIBUTES]['status']['value'],
+                self::KEY_DEPARTMENT => $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'],
+                'vacationDayBalance' => $value[self::ATTRIBUTES]['vacation_day_balance']['value'],
+            ];
+
             if (count($this->filteredDepartments) > 0) {
                 if (in_array($value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'], $this->filteredDepartments) === false) {
+                    print "dep:".$value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id']."\n";
+                    var_dump($personIformation);
+
+
                     continue;
                 }
             }
@@ -229,8 +243,7 @@ class Personio
 
         curl_close($ch);
 
-        var_dump($rows);die;
-
+die;
         return $rows;
     }
 
