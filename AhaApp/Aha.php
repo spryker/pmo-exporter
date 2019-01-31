@@ -25,9 +25,6 @@ class Aha
     const COLUMN_REFERENCE_NUM = 'reference_num';
     const IMPORT_DATE_FORMAT = 'Y-m-d';
 
-    /**
-     * @var AhaConfig
-     */
     protected $config;
 
     const COLUMN_VALUE = 'value';
@@ -38,6 +35,9 @@ class Aha
 
     const COLUMN_IDEAS_COUNTER = 'ideas_counter';
 
+    /**
+     * @var AhaConfig
+     */
     public function __construct(AhaConfig $config)
     {
         $this->config = $config;
@@ -97,6 +97,8 @@ class Aha
         foreach ($this->products as $product) {
             $this->log('Loading '.$product.'...');
             $productData = $this->getProductIdeas([], $product, 1);
+            var_dump($productData);
+            die;
             $this->exportOutput($product, $productData);
             $ideas[$product] = [];
             $ideas[$product] = $productData;
@@ -252,8 +254,6 @@ class Aha
 
     /**
      * @param array $data
-     *
-     * @throws \Google_Exception
      */
     protected function saveDataToGoogleSheet(array $data)
     {
