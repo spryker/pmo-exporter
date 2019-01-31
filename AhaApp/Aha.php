@@ -44,11 +44,12 @@ class Aha
         
         $this->products = [
             'ECO',
-            'MID',
+            'CC',
             'COS',
-            'B2CS',
+            'CMS',
+            'COC',
+            'INT',
             'API',
-            'TECH',
         ];
 
         for ($a = 1; $a <= 4; $a++) {
@@ -97,13 +98,10 @@ class Aha
         foreach ($this->products as $product) {
             $this->log('Loading '.$product.'...');
             $productData = $this->getProductIdeas([], $product, 1);
-            var_dump($productData);
-//            die;
-//            $this->exportOutput($product, $productData);
             $ideas[$product] = [];
             $ideas[$product] = $productData;
         }
-die;
+
         return $this->parsed;
 
     }
@@ -134,8 +132,6 @@ die;
 
         $serverOutput = curl_exec($ch);
         curl_close($ch);
-
-        var_dump($serverOutput);
 
         $response = json_decode($serverOutput, true);
 
