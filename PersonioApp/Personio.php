@@ -229,6 +229,8 @@ class Personio
 
         curl_close($ch);
 
+        var_dump($rows);die;
+
         return $rows;
     }
 
