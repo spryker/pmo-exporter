@@ -228,9 +228,6 @@ class Personio
             $rows[] = $personInformation;
         }
 
-        var_dump($rows);
-        die();
-
         curl_close($ch);
 
         return $rows;
