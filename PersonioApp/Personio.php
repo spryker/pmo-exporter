@@ -257,6 +257,11 @@ class Personio
 
         $rows = [];
         foreach ($response['data'] as $key => $value) {
+
+            if (93481 != $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['id']['value']) {
+                continue;
+            }
+
             $this->availableTimeOffApprovalStatuses[$value[self::ATTRIBUTES]['status']] = $value[self::ATTRIBUTES]['status'];
             $this->availableTimeOffTypes[$value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id']] = $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'];
 
@@ -284,6 +289,7 @@ class Personio
                 'half_day_end' => $value[self::ATTRIBUTES]['half_day_end'],
                 static::KEY_DEPARTMENT => $department,
             ];
+            var_dump($dayOffInformation);
 
             if (count($this->filteredTimeOffTypes) > 0) {
                 if (in_array($value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === true) {
