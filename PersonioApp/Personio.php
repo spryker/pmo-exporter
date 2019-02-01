@@ -118,8 +118,15 @@ class Personio
 
     public function run()
     {
-        $this->log('Starting...');
-        $this->parseTimeOffsToGoogleSheetFormat();
+        $this->log('Downloading day offs...');
+        $timeOffs = $this->getTimeOffs();
+
+        $this->log('Converting days offs...');
+        $rows = $this->convertTimeOffs($timeOffs);
+
+        $this->log('Exporting days offs...');
+        $this->exportToGoogleSheetFormat($rows);
+
         $this->log('Done.');
     }
 
@@ -204,8 +211,6 @@ class Personio
 
             if (count($this->filteredEmployeeStatuses) > 0) {
                 if (in_array($value[self::ATTRIBUTES]['status']['value'], $this->filteredEmployeeStatuses) === false) {
-                    print "wrong status:" . $value[self::ATTRIBUTES]['status']['value'] . "\n";
-                    var_dump($personInformation);
                     continue;
                 }
             }
@@ -215,9 +220,6 @@ class Personio
 
                 if (count($this->filteredDepartments) > 0) {
                     if (in_array($value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'], $this->filteredDepartments) === false) {
-                        print "wrong dep:" . $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id'] . "\n";
-                        var_dump($personInformation);
-
                         continue;
                     }
                 }
@@ -247,18 +249,14 @@ class Personio
         curl_setopt($ch, CURLOPT_URL, $this->config->getPersonioApiUrl() . 'company/time-offs');
         curl_setopt($ch, CURLOPT_POST, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
         $server_output = curl_exec($ch);
+        curl_close($ch);
 
         $response = json_decode($server_output, true);
 
         $rows = [];
+
         foreach ($response['data'] as $key => $value) {
-
-            if (93481 != $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['id']['value']) {
-                continue;
-            }
-
             $this->availableTimeOffApprovalStatuses[$value[self::ATTRIBUTES]['status']] = $value[self::ATTRIBUTES]['status'];
             $this->availableTimeOffTypes[$value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id']] = $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'];
 
@@ -286,7 +284,6 @@ class Personio
                 'half_day_end' => $value[self::ATTRIBUTES]['half_day_end'],
                 static::KEY_DEPARTMENT => $department,
             ];
-            var_dump($dayOffInformation);
 
             if (count($this->filteredTimeOffTypes) > 0) {
                 if (in_array($value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === true) {
@@ -317,42 +314,25 @@ class Personio
             $rows[] = $dayOffInformation;
         }
 
-        curl_close($ch);
-
         return $rows;
     }
 
-    protected function parseTimeOffsToGoogleSheetFormat()
+    protected function convertTimeOffs(array $timeOffs)
     {
-        $client = new Google_Client();
-        $client->setApplicationName('Personio');
-        $client->setScopes([Google_Service_Sheets::SPREADSHEETS]);
-        $client->setAuthConfig($this->config->getGoogleSecretJson());
-        $client->setAccessType('offline');
-
-        $sheets = new Google_Service_Sheets($client);
-
-        $rangeSheet1 = 'Sheet1!A2:F';
-        $spreadsheetId = $this->config->getPersonioSpreadSheet1TokenId();
-
-        $sheets->spreadsheets_values->clear($spreadsheetId, 'Sheet1!A2:G10000', new Google_Service_Sheets_ClearValuesRequest());
-
-        $timeOffs = $this->getTimeOffs();
-
         $rows = [];
 
         foreach ($timeOffs as $timeOff) {
-            $this->log('Processing '.$timeOff['start_date'].'');
-            $date = new DateTime($timeOff['start_date']);
-            $dateCount = ceil($timeOff['days_count']);
-
-            if ($dateCount <= 0) {
+            $this->log('Processing ' . $timeOff['start_date'] . '');
+            $startDate = new DateTime($timeOff['start_date']);
+            $endDate = new DateTime($timeOff['end_date']);
+            if (ceil($timeOff['days_count']) <= 0) {
                 continue;
             }
 
             $prcDates = [];
 
-            for($a = 1 ; $a <= $dateCount ; $a++) {
+            $date = $startDate;
+            while ($date <= $endDate) {
                 $hoursPerDay = self::WORKING_HOURS_PER_DAY;
                 $prcDates[] = [
                     'Absences',
@@ -381,13 +361,31 @@ class Personio
             }
 
             if ($timeOff['half_day_end'] == 1) {
-                $prcDates[count($prcDates)-1][5] = self::WORKING_HOURS_PER_DAY / 2;
+                $prcDates[count($prcDates) - 1][5] = self::WORKING_HOURS_PER_DAY / 2;
             }
 
             foreach ($prcDates as $value) {
                 $rows[] = $value;
             }
         }
+
+        return $rows;
+    }
+
+    protected function exportToGoogleSheetFormat(array $rows) {
+
+        $client = new Google_Client();
+        $client->setApplicationName('Personio');
+        $client->setScopes([Google_Service_Sheets::SPREADSHEETS]);
+        $client->setAuthConfig($this->config->getGoogleSecretJson());
+        $client->setAccessType('offline');
+
+        $sheets = new Google_Service_Sheets($client);
+
+        $rangeSheet1 = 'Sheet1!A2:F';
+        $spreadsheetId = $this->config->getPersonioSpreadSheet1TokenId();
+
+        $sheets->spreadsheets_values->clear($spreadsheetId, 'Sheet1!A2:G10000', new Google_Service_Sheets_ClearValuesRequest());
 
         $body = new Google_Service_Sheets_ValueRange([
             'values' => $rows,
