@@ -13,6 +13,9 @@ use JiraRestApi\User\UserService;
 
 class Personio
 {
+
+    const ATTRIBUTES = 'attributes';
+
     /**
      * @var PersonioConfig
      */
@@ -20,24 +23,27 @@ class Personio
 
     const WORKING_HOURS_PER_DAY = 8;
 
-    protected $filteredTimeOffIds;
-    protected $filteredTimeOffTypes;
-    protected $filteredDepartments;
-    protected $filteredEmployeeStatuses;
-    protected $filteredTimeOffApprovalStatuses;
+    protected $filteredTimeOffIds = [];
+    protected $filteredTimeOffTypes = [
+        1879, // Training
+        1088, // Home office
+    ];
+    protected $filteredDepartments = [2626, 2624, 114938, 114932, 79782, 79779, 2573, 184022, 114935];
+    protected $filteredEmployeeStatuses = [];
+    protected $filteredTimeOffApprovalStatuses = [];
     protected $filteredTimeOffMonths;
 
-    protected $availableTimeOffTypes;
-    protected $availableTimeOffApprovalStatuses;
-    protected $availableDepartments;
-    protected $availableEmployeeStatuses;
+    protected $availableTimeOffTypes = [];
+    protected $availableTimeOffApprovalStatuses = [];
+    protected $availableDepartments = [];
+    protected $availableEmployeeStatuses = [];
     protected $includeEmployees = [
         697920,//Felix Richard Pfander
         764429,//Juliane Kissau
         116577,//Annika Ulke
     ];
 
-    protected $employees;
+    protected $employees = [];
     protected $processingStatus = null;
 
     const KEY_TIME_OFF = 'time_off';
@@ -58,53 +64,32 @@ class Personio
 
     protected $jiraCredentials;
     protected $jiraUsers;
-    protected $timeOffJiraStoryName;
-    protected $timeOffJira;
-
-    const ATTRIBUTES = 'attributes';
+    protected $timeOffJiraStoryName = [
+        'Child sick' => 'P_ChildSick_Hours',
+        'Home Office' => 'Home Office',
+        'Paid vacation' => 'P_Vacation_Hours_PAID',
+        'Sick days' => 'P_Sick_Hours',
+        'Special Paid Vacation' => 'P_Vacation_Hours_PAID', //same as 'Paid vacation'
+        'Parental leave' => 'P_Parental Leave',
+        'Unpaid vacation' => 'P_Vacation_Hours_UNPAID',
+        'Training ' => 'Training',
+    ];
+    protected $timeOffJira= [
+        'Child sick' => 'ABSENCE-2',
+        'Home Office' => 'Home Office',
+        'Paid vacation' => 'ABSENCE-3',
+        'Sick days' => 'ABSENCE-4',
+        'Special Paid Vacation' => 'ABSENCE-3', //same as 'Paid vacation'
+        'Unpaid vacation' => 'ABSENCE-5', //same as 'Paid vacation'
+        'Parental leave' => 'ABSENCE-10',
+        'Training ' => 'ABSENCE-15',
+    ];
 
     public function __construct(PersonioConfig $config)
     {
         $this->config = $config;
         
-        $this->filteredTimeOffIds = [];
-        $this->filteredTimeOffTypes = [
-            1879, // Training
-            1088, // Home office
-        ];
-        $this->filteredTimeOffApprovalStatuses = [];
-        $this->filteredDepartments = [2626, 2624, 114938, 114932, 79782, 79779, 2573, 184022, 114935];
-
-        $this->filteredEmployeeStatuses = [];
         $this->filteredTimeOffMonths = $this->getRequiredMonths();
-
-        $this->availableTimeOffTypes = [];
-        $this->availableTimeOffApprovalStatuses = [];
-        $this->availableDepartments = [];
-        $this->availableEmployeeStatuses = [];
-
-        $this->employees = [];
-
-        $this->timeOffJira = [
-            'Child sick' => 'ABSENCE-2',
-            'Home Office' => 'Home Office',
-            'Paid vacation' => 'ABSENCE-3',
-            'Sick days' => 'ABSENCE-4',
-            'Special Paid Vacation' => 'ABSENCE-3', //same as 'Paid vacation'
-            'Unpaid vacation' => 'ABSENCE-5', //same as 'Paid vacation'
-            'Parental leave' => 'ABSENCE-10',
-            'Training ' => 'ABSENCE-15',
-        ];
-        $this->timeOffJiraStoryName = [
-            'Child sick' => 'P_ChildSick_Hours',
-            'Home Office' => 'Home Office',
-            'Paid vacation' => 'P_Vacation_Hours_PAID',
-            'Sick days' => 'P_Sick_Hours',
-            'Special Paid Vacation' => 'P_Vacation_Hours_PAID', //same as 'Paid vacation'
-            'Parental leave' => 'P_Parental Leave',
-            'Unpaid vacation' => 'P_Vacation_Hours_UNPAID',
-            'Training ' => 'Training',
-        ];
 
         $this->jiraCredentials = new ArrayConfiguration([
             'jiraHost' => $this->config->getPersonioJiraHost(),
@@ -243,6 +228,9 @@ class Personio
             $rows[] = $personInformation;
         }
 
+        var_dump($rows);
+        die();
+
         curl_close($ch);
 
         return $rows;
@@ -272,6 +260,31 @@ class Personio
             $this->availableTimeOffApprovalStatuses[$value[self::ATTRIBUTES]['status']] = $value[self::ATTRIBUTES]['status'];
             $this->availableTimeOffTypes[$value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id']] = $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'];
 
+            $department = '';
+            foreach ($users as $user) {
+                if ($user['id'] === $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['id']['value']) {
+                    $department = $user[static::KEY_DEPARTMENT];
+
+                    break;
+                }
+            }
+
+            $dayOffInformation = [
+                'id' => $value[self::ATTRIBUTES]['id'],
+                'request_status' => $value[self::ATTRIBUTES]['status'],
+                'start_date' => $value[self::ATTRIBUTES]['start_date'],
+                'end_date' => $value[self::ATTRIBUTES]['end_date'],
+                'days_count' => $value[self::ATTRIBUTES]['days_count'],
+                'time_off_type_id' => $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'],
+                'time_off_type_name' => $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'],
+                'employee_name' => $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['first_name']['value'] . ' ' . $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['last_name']['value'],
+                'employee_email' => $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['email']['value'],
+                'certificate_status' => $value[self::ATTRIBUTES]['certificate']['status'],
+                'half_day_start' => $value[self::ATTRIBUTES]['half_day_start'],
+                'half_day_end' => $value[self::ATTRIBUTES]['half_day_end'],
+                static::KEY_DEPARTMENT => $department,
+            ];
+
             if (count($this->filteredTimeOffTypes) > 0) {
                 if (in_array($value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === true) {
                     continue;
@@ -298,29 +311,7 @@ class Personio
                 continue;
             }
 
-            $department = '';
-            foreach ($users as $user) {
-                if ($user['id'] === $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['id']['value']) {
-                    $department = $user[static::KEY_DEPARTMENT];
-                    break;
-                }
-            }
-
-            $rows[] = [
-                'id' => $value[self::ATTRIBUTES]['id'],
-                'request_status' => $value[self::ATTRIBUTES]['status'],
-                'start_date' => $value[self::ATTRIBUTES]['start_date'],
-                'end_date' => $value[self::ATTRIBUTES]['end_date'],
-                'days_count' => $value[self::ATTRIBUTES]['days_count'],
-                'time_off_type_id' => $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'],
-                'time_off_type_name' => $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'],
-                'employee_name' => $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['first_name']['value'] . ' ' . $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['last_name']['value'],
-                'employee_email' => $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['email']['value'],
-                'certificate_status' => $value[self::ATTRIBUTES]['certificate']['status'],
-                'half_day_start' => $value[self::ATTRIBUTES]['half_day_start'],
-                'half_day_end' => $value[self::ATTRIBUTES]['half_day_end'],
-                static::KEY_DEPARTMENT => $department,
-            ];
+            $rows[] = $dayOffInformation;
         }
 
         curl_close($ch);
