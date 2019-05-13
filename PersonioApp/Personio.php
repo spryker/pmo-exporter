@@ -257,12 +257,14 @@ class Personio
         $rows = [];
 
         foreach ($response['data'] as $key => $value) {
-            $this->availableTimeOffApprovalStatuses[$value[self::ATTRIBUTES]['status']] = $value[self::ATTRIBUTES]['status'];
-            $this->availableTimeOffTypes[$value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id']] = $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'];
+            $attributes = $value[self::ATTRIBUTES];
+            
+            $this->availableTimeOffApprovalStatuses[$attributes['status']] = $attributes['status'];
+            $this->availableTimeOffTypes[$attributes['time_off_type'][self::ATTRIBUTES]['id']] = $attributes['time_off_type'][self::ATTRIBUTES]['name'];
 
             $department = '';
             foreach ($users as $user) {
-                if ($user['id'] === $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['id']['value']) {
+                if ($user['id'] === $attributes['employee'][self::ATTRIBUTES]['id']['value']) {
                     $department = $user[static::KEY_DEPARTMENT];
 
                     break;
@@ -270,44 +272,49 @@ class Personio
             }
 
             $dayOffInformation = [
-                'id' => $value[self::ATTRIBUTES]['id'],
-                'request_status' => $value[self::ATTRIBUTES]['status'],
-                'start_date' => $value[self::ATTRIBUTES]['start_date'],
-                'end_date' => $value[self::ATTRIBUTES]['end_date'],
-                'days_count' => $value[self::ATTRIBUTES]['days_count'],
-                'time_off_type_id' => $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'],
-                'time_off_type_name' => $value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['name'],
-                'employee_name' => $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['first_name']['value'] . ' ' . $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['last_name']['value'],
-                'employee_email' => $value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['email']['value'],
-                'certificate_status' => $value[self::ATTRIBUTES]['certificate']['status'],
-                'half_day_start' => $value[self::ATTRIBUTES]['half_day_start'],
-                'half_day_end' => $value[self::ATTRIBUTES]['half_day_end'],
+                'id' => $attributes['id'],
+                'request_status' => $attributes['status'],
+                'start_date' => $attributes['start_date'],
+                'end_date' => $attributes['end_date'],
+                'days_count' => $attributes['days_count'],
+                'time_off_type_id' => $attributes['time_off_type'][self::ATTRIBUTES]['id'],
+                'time_off_type_name' => $attributes['time_off_type'][self::ATTRIBUTES]['name'],
+                'employee_name' => $attributes['employee'][self::ATTRIBUTES]['first_name']['value'] . ' ' . $attributes['employee'][self::ATTRIBUTES]['last_name']['value'],
+                'employee_email' => $attributes['employee'][self::ATTRIBUTES]['email']['value'],
+                'certificate_status' => $attributes['certificate']['status'],
+                'half_day_start' => $attributes['half_day_start'],
+                'half_day_end' => $attributes['half_day_end'],
                 static::KEY_DEPARTMENT => $department,
             ];
 
             if (count($this->filteredTimeOffTypes) > 0) {
-                if (in_array($value[self::ATTRIBUTES]['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === true) {
+                if (in_array($attributes['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === true) {
+                    print 'filteredTimeOffTypes ' . var_export($attributes).PHP_EOL;
                     continue;
                 }
             }
 
             if (count($this->filteredTimeOffApprovalStatuses) > 0) {
-                if (in_array($value[self::ATTRIBUTES]['status'], $this->filteredTimeOffApprovalStatuses) === false) {
+                if (in_array($attributes['status'], $this->filteredTimeOffApprovalStatuses) === false) {
+                    print 'filteredTimeOffApprovalStatuses ' . var_export($attributes).PHP_EOL;
                     continue;
                 }
             }
 
             if (count($this->filteredTimeOffMonths) > 0) {
-                if (in_array(substr($value[self::ATTRIBUTES]['start_date'], 0, 7), $this->filteredTimeOffMonths) === false) {
+                if (in_array(substr($attributes['start_date'], 0, 7), $this->filteredTimeOffMonths) === false) {
+                    print 'filteredTimeOffMonths ' . var_export($attributes).PHP_EOL;
                     continue;
                 }
             }
 
-            if (in_array($value[self::ATTRIBUTES]['employee'][self::ATTRIBUTES]['id']['value'], $this->employees) === false) {
+            if (in_array($attributes['employee'][self::ATTRIBUTES]['id']['value'], $this->employees) === false) {
+                print 'employee ' . var_export($attributes).PHP_EOL;
                 continue;
             }
 
-            if (in_array($value[self::ATTRIBUTES]['id'], $this->filteredTimeOffIds) === true) {
+            if (in_array($attributes['id'], $this->filteredTimeOffIds) === true) {
+                print 'filteredTimeOffIds ' . var_export($attributes).PHP_EOL;
                 continue;
             }
 
