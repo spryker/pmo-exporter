@@ -258,7 +258,10 @@ class Personio
 
         foreach ($response['data'] as $key => $value) {
             $attributes = $value[self::ATTRIBUTES];
-            
+            if ($attributes['employee']['attributes']['id']['value'] == 18455) {
+                var_dump($attributes);
+            }
+
             $this->availableTimeOffApprovalStatuses[$attributes['status']] = $attributes['status'];
             $this->availableTimeOffTypes[$attributes['time_off_type'][self::ATTRIBUTES]['id']] = $attributes['time_off_type'][self::ATTRIBUTES]['name'];
 
@@ -329,10 +332,6 @@ class Personio
         $rows = [];
 
         foreach ($timeOffs as $timeOff) {
-            if ($timeOff['employee']['attributes']['id']['value'] == 18455) {
-                var_dump($timeOff);
-            }
-
             $this->log('Processing ' . $timeOff['start_date'] . '');
             $startDate = new DateTime($timeOff['start_date']);
             $endDate = new DateTime($timeOff['end_date']);
