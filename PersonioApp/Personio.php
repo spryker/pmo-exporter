@@ -289,32 +289,32 @@ class Personio
 
             if (count($this->filteredTimeOffTypes) > 0) {
                 if (in_array($attributes['time_off_type'][self::ATTRIBUTES]['id'], $this->filteredTimeOffTypes) === true) {
-                    print 'filteredTimeOffTypes ' . var_export($attributes).PHP_EOL;
+//                    print 'filteredTimeOffTypes ' . var_export($attributes).PHP_EOL;
                     continue;
                 }
             }
 
             if (count($this->filteredTimeOffApprovalStatuses) > 0) {
                 if (in_array($attributes['status'], $this->filteredTimeOffApprovalStatuses) === false) {
-                    print 'filteredTimeOffApprovalStatuses ' . var_export($attributes).PHP_EOL;
+//                    print 'filteredTimeOffApprovalStatuses ' . var_export($attributes).PHP_EOL;
                     continue;
                 }
             }
 
             if (count($this->filteredTimeOffMonths) > 0) {
                 if (in_array(substr($attributes['start_date'], 0, 7), $this->filteredTimeOffMonths) === false) {
-                    print 'filteredTimeOffMonths ' . var_export($attributes).PHP_EOL;
+//                    print 'filteredTimeOffMonths ' . var_export($attributes).PHP_EOL;
                     continue;
                 }
             }
 
             if (in_array($attributes['employee'][self::ATTRIBUTES]['id']['value'], $this->employees) === false) {
-                print 'employee ' . var_export($attributes).PHP_EOL;
+//                print 'employee ' . var_export($attributes).PHP_EOL;
                 continue;
             }
 
             if (in_array($attributes['id'], $this->filteredTimeOffIds) === true) {
-                print 'filteredTimeOffIds ' . var_export($attributes).PHP_EOL;
+//                print 'filteredTimeOffIds ' . var_export($attributes).PHP_EOL;
                 continue;
             }
 
@@ -329,6 +329,10 @@ class Personio
         $rows = [];
 
         foreach ($timeOffs as $timeOff) {
+            if ($timeOff['employee']['attributes']['id']['value'] == 18455) {
+                var_dump($timeOff);
+            }
+
             $this->log('Processing ' . $timeOff['start_date'] . '');
             $startDate = new DateTime($timeOff['start_date']);
             $endDate = new DateTime($timeOff['end_date']);
