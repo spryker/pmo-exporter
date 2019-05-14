@@ -333,11 +333,13 @@ class Personio
 
         foreach ($timeOffs as $timeOff) {
             $this->log('Processing ' . $timeOff['start_date'] . '');
-            $startDate = new DateTime($timeOff['start_date']);
-            $endDate = new DateTime($timeOff['end_date']);
             if (ceil($timeOff['days_count']) <= 0) {
+                $this->log('no days in interval: ' . $timeOff['days_count'] . '');
                 continue;
             }
+            $startDate = new DateTime($timeOff['start_date']);
+            $endDate = new DateTime($timeOff['end_date']);
+            $endDate->modify('+12 hour');
 
             $prcDates = [];
 
