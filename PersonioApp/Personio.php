@@ -196,7 +196,7 @@ class Personio
 
         if (empty($response['data'])) {
             print 'Access is denied. Please check tokens.';
-            return;
+            return [];
         }
 
         $rows = [];
@@ -261,7 +261,7 @@ class Personio
 
         if (empty($response['data'])) {
             print 'Access is denied. Please check tokens.';
-            return;
+            return [];
         }
 
         $rows = [];
