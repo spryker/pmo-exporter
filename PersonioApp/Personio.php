@@ -194,6 +194,11 @@ class Personio
 
         $response = json_decode($server_output, true);
 
+        if (empty($response['data'])) {
+            print 'Access is denied. Please check tokens.';
+            return;
+        }
+
         $rows = [];
         foreach ($response['data'] as $key => $value) {
             $this->availableDepartments[$value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['id']] = $value[self::ATTRIBUTES][self::KEY_DEPARTMENT]['value'][self::ATTRIBUTES]['name'];
@@ -253,6 +258,11 @@ class Personio
         curl_close($ch);
 
         $response = json_decode($server_output, true);
+
+        if (empty($response['data'])) {
+            print 'Access is denied. Please check tokens.';
+            return;
+        }
 
         $rows = [];
 
