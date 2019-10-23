@@ -173,12 +173,21 @@ class Personio
 
         curl_close($ch);
 
+        if (empty($response['data'])) {
+            return false;
+        }
+
         return $response['data']['token'];
     }
 
     protected function getUsersList()
     {
         $token = $this->getToken();
+        if ($token === false) {
+            print 'Access is denied. Please check tokens.';
+            return [];
+        }
+
 
         $ch = curl_init();
 
@@ -243,6 +252,11 @@ class Personio
     protected function getTimeOffs()
     {
         $token = $this->getToken();
+        if ($token === false) {
+            print 'Access is denied. Please check tokens.';
+            return [];
+        }
+
         $users = $this->getUsersList();
 
         $ch = curl_init();
